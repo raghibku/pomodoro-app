@@ -14,6 +14,7 @@ function Timer() {
   const [mode, setMode] = useState('work')
   const [secondsLeft, setSecondsLeft] = useState(WORK_SECONDS)
   const [isRunning, setIsRunning] = useState(false)
+  const [sessionsCompleted, setSessionsCompleted] = useState(0)
 
   useEffect(() => {
     if (!isRunning) return
@@ -25,8 +26,14 @@ function Timer() {
     return () => clearInterval(intervalId)
   }, [isRunning])
 
+  // `mode` deliberately excluded from deps: secondsLeft already changes every
+  // tick, which keeps this closure's `mode` fresh without re-running on a
+  // mode-only change (that would double-fire and skip the break segment).
   useEffect(() => {
     if (secondsLeft !== 0 || !isRunning) return
+    if (mode === 'work') {
+      setSessionsCompleted((count) => count + 1)
+    }
     setMode((prevMode) => (prevMode === 'work' ? 'break' : 'work'))
   }, [secondsLeft, isRunning])
 
@@ -84,6 +91,9 @@ function Timer() {
           Reset
         </button>
       </div>
+      <p className="text-sm text-slate-400">
+        Sessions completed: {sessionsCompleted}
+      </p>
     </div>
   )
 }
