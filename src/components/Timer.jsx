@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 
 const WORK_SECONDS = 25 * 60
+const BREAK_SECONDS = 5 * 60
+const DURATIONS = { work: WORK_SECONDS, break: BREAK_SECONDS }
 
 function formatTime(totalSeconds) {
   const minutes = Math.floor(totalSeconds / 60)
@@ -9,6 +11,7 @@ function formatTime(totalSeconds) {
 }
 
 function Timer() {
+  const [mode, setMode] = useState('work')
   const [secondsLeft, setSecondsLeft] = useState(WORK_SECONDS)
   const [isRunning, setIsRunning] = useState(false)
 
@@ -16,21 +19,22 @@ function Timer() {
     if (!isRunning) return
 
     const intervalId = setInterval(() => {
-      setSecondsLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(intervalId)
-          setIsRunning(false)
-          return 0
-        }
-        return prev - 1
-      })
+      setSecondsLeft((prev) => (prev > 0 ? prev - 1 : 0))
     }, 1000)
 
     return () => clearInterval(intervalId)
   }, [isRunning])
 
+  useEffect(() => {
+    if (secondsLeft !== 0 || !isRunning) return
+    setMode((prevMode) => (prevMode === 'work' ? 'break' : 'work'))
+  }, [secondsLeft, isRunning])
+
+  useEffect(() => {
+    setSecondsLeft(DURATIONS[mode])
+  }, [mode])
+
   function handleStart() {
-    if (secondsLeft === 0) return
     setIsRunning(true)
   }
 
@@ -40,11 +44,21 @@ function Timer() {
 
   function handleReset() {
     setIsRunning(false)
+    setMode('work')
     setSecondsLeft(WORK_SECONDS)
   }
 
+  const isBreak = mode === 'break'
+
   return (
     <div className="flex flex-col items-center gap-6">
+      <span
+        className={`rounded-full px-4 py-1 text-sm font-semibold uppercase tracking-wide ${
+          isBreak ? 'bg-sky-600' : 'bg-emerald-600'
+        }`}
+      >
+        {isBreak ? 'Break' : 'Work'}
+      </span>
       <span className="text-7xl font-mono font-semibold tabular-nums">
         {formatTime(secondsLeft)}
       </span>
