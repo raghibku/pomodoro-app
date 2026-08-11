@@ -3,6 +3,15 @@ import SettingsPanel from './SettingsPanel'
 
 const DEFAULT_WORK_MINUTES = 25
 const DEFAULT_BREAK_MINUTES = 5
+const STORAGE_KEY = 'pomodoro-state'
+
+function readStoredState() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? {}
+  } catch {
+    return {}
+  }
+}
 
 function formatTime(totalSeconds) {
   const minutes = Math.floor(totalSeconds / 60)
@@ -37,12 +46,27 @@ function notifySessionEnd(endedMode) {
 }
 
 function Timer() {
-  const [workMinutes, setWorkMinutes] = useState(DEFAULT_WORK_MINUTES)
-  const [breakMinutes, setBreakMinutes] = useState(DEFAULT_BREAK_MINUTES)
+  const [workMinutes, setWorkMinutes] = useState(
+    () => readStoredState().workMinutes ?? DEFAULT_WORK_MINUTES,
+  )
+  const [breakMinutes, setBreakMinutes] = useState(
+    () => readStoredState().breakMinutes ?? DEFAULT_BREAK_MINUTES,
+  )
   const [mode, setMode] = useState('work')
-  const [secondsLeft, setSecondsLeft] = useState(DEFAULT_WORK_MINUTES * 60)
+  const [secondsLeft, setSecondsLeft] = useState(() => workMinutes * 60)
   const [isRunning, setIsRunning] = useState(false)
-  const [sessionsCompleted, setSessionsCompleted] = useState(0)
+  const [sessionsCompleted, setSessionsCompleted] = useState(
+    () => readStoredState().sessionsCompleted ?? 0,
+  )
+
+  useEffect(() => {
+    const state = { workMinutes, breakMinutes, sessionsCompleted }
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+    } catch {
+      // localStorage may be unavailable (e.g. private browsing) - persistence is best-effort
+    }
+  }, [workMinutes, breakMinutes, sessionsCompleted])
 
   useEffect(() => {
     if (!isRunning) return
