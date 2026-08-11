@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
+import SettingsPanel from './SettingsPanel'
 
-const WORK_SECONDS = 25 * 60
-const BREAK_SECONDS = 5 * 60
-const DURATIONS = { work: WORK_SECONDS, break: BREAK_SECONDS }
+const DEFAULT_WORK_MINUTES = 25
+const DEFAULT_BREAK_MINUTES = 5
 
 function formatTime(totalSeconds) {
   const minutes = Math.floor(totalSeconds / 60)
@@ -10,9 +10,37 @@ function formatTime(totalSeconds) {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`
 }
 
+function playBeep() {
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext
+  if (!AudioContextClass) return
+
+  const context = new AudioContextClass()
+  const oscillator = context.createOscillator()
+  const gain = context.createGain()
+  oscillator.frequency.value = 880
+  gain.gain.value = 0.2
+  oscillator.connect(gain)
+  gain.connect(context.destination)
+  oscillator.start()
+  oscillator.stop(context.currentTime + 0.2)
+  oscillator.onended = () => context.close()
+}
+
+function notifySessionEnd(endedMode) {
+  const title = endedMode === 'work' ? 'Work session complete' : 'Break complete'
+
+  if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+    new Notification(title)
+  } else {
+    playBeep()
+  }
+}
+
 function Timer() {
+  const [workMinutes, setWorkMinutes] = useState(DEFAULT_WORK_MINUTES)
+  const [breakMinutes, setBreakMinutes] = useState(DEFAULT_BREAK_MINUTES)
   const [mode, setMode] = useState('work')
-  const [secondsLeft, setSecondsLeft] = useState(WORK_SECONDS)
+  const [secondsLeft, setSecondsLeft] = useState(DEFAULT_WORK_MINUTES * 60)
   const [isRunning, setIsRunning] = useState(false)
   const [sessionsCompleted, setSessionsCompleted] = useState(0)
 
@@ -34,14 +62,28 @@ function Timer() {
     if (mode === 'work') {
       setSessionsCompleted((count) => count + 1)
     }
+    notifySessionEnd(mode)
     setMode((prevMode) => (prevMode === 'work' ? 'break' : 'work'))
   }, [secondsLeft, isRunning])
 
   useEffect(() => {
-    setSecondsLeft(DURATIONS[mode])
-  }, [mode])
+    setSecondsLeft(mode === 'work' ? workMinutes * 60 : breakMinutes * 60)
+  }, [mode, workMinutes, breakMinutes])
+
+  function handleWorkMinutesChange(minutes) {
+    if (!Number.isFinite(minutes) || minutes < 1) return
+    setWorkMinutes(minutes)
+  }
+
+  function handleBreakMinutesChange(minutes) {
+    if (!Number.isFinite(minutes) || minutes < 1) return
+    setBreakMinutes(minutes)
+  }
 
   function handleStart() {
+    if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+      Notification.requestPermission()
+    }
     setIsRunning(true)
   }
 
@@ -52,7 +94,7 @@ function Timer() {
   function handleReset() {
     setIsRunning(false)
     setMode('work')
-    setSecondsLeft(WORK_SECONDS)
+    setSecondsLeft(workMinutes * 60)
   }
 
   const isBreak = mode === 'break'
@@ -94,6 +136,13 @@ function Timer() {
       <p className="text-sm text-slate-400">
         Sessions completed: {sessionsCompleted}
       </p>
+      <SettingsPanel
+        workMinutes={workMinutes}
+        breakMinutes={breakMinutes}
+        onWorkMinutesChange={handleWorkMinutesChange}
+        onBreakMinutesChange={handleBreakMinutesChange}
+        disabled={isRunning}
+      />
     </div>
   )
 }
