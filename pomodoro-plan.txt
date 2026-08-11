@@ -1,0 +1,53 @@
+Pomodoro App — Build Plan (React + Tailwind CSS)
+==================================================
+
+Goal: First AI-assisted project, built incrementally so each step can be
+reviewed, explained, and tested before moving to the next. Paste these
+prompts to Claude one at a time, in order.
+
+1. Scaffold
+   "Set up a new Vite + React + Tailwind CSS project in this folder. Just
+   get the boilerplate running with Tailwind configured — no components
+   yet. Confirm the dev server starts."
+
+1.5. CLAUDE.md (optional but recommended, right after scaffold)
+   "Run /init to generate a CLAUDE.md documenting this project's
+   structure and conventions."
+
+2. Core timer
+   "Build the core Pomodoro timer: a Timer component with countdown
+   state (default 25:00), and Start/Pause/Reset buttons, using
+   useState/useEffect. Explain the hooks briefly as you write them.
+   Minimal styling for now — just get it counting down correctly."
+
+3. Work/break cycle
+   "Add automatic work/break cycle switching: after a work session hits
+   0, auto-switch to a 5-minute break, then back to work. Show the
+   current mode (Work/Break) in the UI."
+
+4. Session counter
+   "Add a session counter that increments each time a work session
+   completes, and display it in the UI."
+
+5. End-of-session alert
+   "Add a simple browser notification (or short beep) when a session
+   ends. No external libraries — keep it minimal."
+
+6. Custom durations
+   "Add a settings panel to customize work and break durations, styled
+   with Tailwind."
+
+7. Persistence
+   "Persist settings and session count to localStorage so they survive
+   a page refresh."
+
+8. Styling pass
+   "Polish the UI with Tailwind: centered layout, distinct color
+   feedback for work vs. break mode, and mobile-responsive sizing."
+
+Usage notes:
+- Paste one prompt at a time. Let Claude build + explain + run the dev
+  server before moving to the next step.
+- Don't batch multiple steps into one prompt — it produces large diffs
+  that are harder to follow and more expensive to review.
+- If an explanation is longer than you want, just say "shorter".
