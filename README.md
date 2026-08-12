@@ -1,16 +1,34 @@
-# React + Vite
+# Pomodoro Timer
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A minimal Pomodoro timer built with React 19 and Tailwind CSS v4.
 
-Currently, two official plugins are available:
+**Live site:** https://raghibku.github.io/pomodoro-app/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- Work/break countdown timer with automatic cycle switching
+- Configurable work and break durations
+- Session counter
+- Desktop notifications on session end (falls back to an audio beep if notifications aren't granted)
+- Settings and session count persist across reloads via `localStorage`
+- Responsive layout with mode-based theming (green for work, blue for break)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Development
 
-## Expanding the Oxlint configuration
+```bash
+npm install
+npm run dev      # start the dev server
+npm run build    # production build
+npm run preview  # preview the production build locally
+npm run lint      # run Oxlint
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Deployment
+
+The site is deployed to GitHub Pages from the `gh-pages` branch:
+
+```bash
+npm run deploy
+```
+
+This builds the app and publishes `dist/` to `gh-pages` via the `gh-pages` package.
