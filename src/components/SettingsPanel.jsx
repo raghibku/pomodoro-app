@@ -6,7 +6,7 @@ function SettingsPanel({
   disabled,
 }) {
   return (
-    <div className="flex w-64 flex-col gap-3 rounded-lg border border-slate-700 bg-slate-800 p-4">
+    <div className="flex w-full max-w-xs flex-col gap-3 rounded-lg border border-slate-700 bg-slate-800/80 p-4 backdrop-blur-sm">
       <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">
         Settings
       </h2>
@@ -35,7 +35,7 @@ function SettingsPanel({
         />
       </label>
       {disabled && (
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-slate-500 hidden">
           Pause or reset the timer to change durations.
         </p>
       )}

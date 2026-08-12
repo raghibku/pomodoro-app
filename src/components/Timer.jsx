@@ -124,22 +124,31 @@ function Timer() {
   const isBreak = mode === 'break'
 
   return (
-    <div className="flex flex-col items-center gap-6">
+    <div
+      className={`flex min-h-screen flex-col items-center justify-center gap-6 px-4 py-10 text-slate-100 transition-colors duration-700 sm:gap-8 ${
+        isBreak
+          ? 'bg-linear-to-b from-sky-950 to-slate-900'
+          : 'bg-linear-to-b from-emerald-950 to-slate-900'
+      }`}
+    >
+      <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Pomodoro</h1>
       <span
-        className={`rounded-full px-4 py-1 text-sm font-semibold uppercase tracking-wide ${
+        className={`rounded-full px-4 py-1 text-sm font-semibold uppercase tracking-wide transition-colors duration-700 ${
           isBreak ? 'bg-sky-600' : 'bg-emerald-600'
         }`}
       >
         {isBreak ? 'Break' : 'Work'}
       </span>
-      <span className="text-7xl font-mono font-semibold tabular-nums">
+      <span className="font-mono text-6xl font-semibold tabular-nums sm:text-7xl md:text-8xl">
         {formatTime(secondsLeft)}
       </span>
-      <div className="flex gap-3">
+      <div className="flex flex-wrap justify-center gap-3">
         <button
           onClick={handleStart}
           disabled={isRunning}
-          className="rounded-md bg-emerald-600 px-4 py-2 font-medium disabled:opacity-40"
+          className={`rounded-md px-4 py-2 font-medium transition-colors disabled:opacity-40 ${
+            isBreak ? 'bg-sky-600' : 'bg-emerald-600'
+          }`}
         >
           Start
         </button>
